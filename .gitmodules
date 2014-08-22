@@ -1,0 +1,3 @@
+[submodule "vendor/js-lib"]
+	path = vendor/js-lib
+	url = git@github.com:teitei-tk/js-lib.git
