@@ -1,8 +1,10 @@
 # coding: utf-8
 import simplejson as json
+import jinja2
 from flask import ( Flask, g, session, request, make_response, )
 
 app = Flask(__name__)
+app.jinja_loader = jinja2.FileSystemLoader('application/views/')
 
 class Storage(object):
     _storage = None

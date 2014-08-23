@@ -6,6 +6,9 @@ class BaseRender(object):
     pass
 
 class JsonRender(BaseRender):
+    """
+    json renderer
+    """
     def render_json(self, data):
         g.content_type  = "text/json;charset=utf-8"
         return json.dumps(data)
@@ -13,11 +16,14 @@ class JsonRender(BaseRender):
     def render_error_json(self, data={}):
         return self.render_json(data)
 
-class HtmlRender(BaseRender):
-    def render_template(self):
-        return 
+class TemplateRender(BaseRender):
+    """
+    template renderer
+    """
+    def render_template(self, template_path, values):
+        return render_template(template_path, **values)
 
-class BaseController(HtmlRender, JsonRender):
+class BaseController(TemplateRender, JsonRender):
     """
     usage:
         app = Blueprint("index", __name__)
