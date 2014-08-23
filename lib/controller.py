@@ -48,6 +48,9 @@ class BaseController(TemplateRender, JsonRender):
             return Index.action()
     """
 
+    """
+    do controller action
+    """
     @classmethod
     def action(cls):
         instance = cls()
@@ -67,7 +70,7 @@ class BaseController(TemplateRender, JsonRender):
         return True
 
     """
-    before action
+    do validation & prepareAction
     """
     def prepare(self):
         return True
@@ -79,18 +82,28 @@ class BaseController(TemplateRender, JsonRender):
         return True
 
     """
-    after action
+    do render
     """
     def preforward(self):
-        pass
+        return self.render_json({})
 
     def render_error(self):
         abort(404)
 
+    """
+    http request
+
+    usasge:
+        http request : hoge=1
+        print(self.request.values.get('hoge')) -> 1
+    """
     @property
     def request(self):
         return g.request
 
+    """
+    stash storage
+    """
     @property
     def storage(self):
         return g.storage
