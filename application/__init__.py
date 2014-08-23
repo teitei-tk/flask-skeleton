@@ -1,15 +1,37 @@
 # coding: utf-8
 import simplejson as json
-from flask import ( Flask, g, session, make_response, )
+from flask import ( Flask, g, session, request, make_response, )
 
 app = Flask(__name__)
 
+class Storage(object):
+    _storage = None
+
+    def __init__(self):
+        self._storage = dict()
+
+    def get(self, key):
+        return self._storage.get(key)
+
+    def set(self, key, value):
+        self._storage[key] = value
+
+    def remove(self, key):
+        if self.get(key):
+            del self._storage[key]
+            return True
+        return False
+
+
 @app.before_request
 def before_request():
-    g.json          = json
     g.session       = session
     g.charset       = 'utf-8'
     g.content_type  = 'text/html;charset=utf-8'
+
+    g.json          = json
+    g.request       = request
+    g.storage       = Storage()
 
 @app.after_request
 def after_request(response):
