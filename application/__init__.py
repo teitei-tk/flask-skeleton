@@ -1,11 +1,12 @@
 # coding: utf-8
+import jinja2
 import simplejson as json
 from flask import ( Flask, g, session, request, make_response, )
-
 from lib.storage import ( DictStorage, MemcacheStorage, )
 
 app = Flask(__name__)
 app.config.from_object("config.memcache")
+app.jinja_loader = jinja2.FileSystemLoader('application/views/')
 
 @app.before_request
 def before_request():
@@ -16,7 +17,6 @@ def before_request():
     g.json          = json
     g.request       = request
     g.storage       = DictStorage()
-
     g.memcache      = MemcacheStorage(app.config['MEMCACHE_SETTING'])
 
 @app.after_request
