@@ -2,26 +2,9 @@
 import simplejson as json
 from flask import ( Flask, g, session, request, make_response, )
 
+from lib.storage import Storage
+
 app = Flask(__name__)
-
-class Storage(object):
-    _storage = None
-
-    def __init__(self):
-        self._storage = dict()
-
-    def get(self, key):
-        return self._storage.get(key)
-
-    def set(self, key, value):
-        self._storage[key] = value
-
-    def remove(self, key):
-        if self.get(key):
-            del self._storage[key]
-            return True
-        return False
-
 
 @app.before_request
 def before_request():
