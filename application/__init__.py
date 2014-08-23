@@ -2,7 +2,7 @@
 import simplejson as json
 from flask import ( Flask, g, session, request, make_response, )
 
-from lib.storage import Storage
+from lib.storage import DictStorage
 
 app = Flask(__name__)
 
@@ -14,7 +14,7 @@ def before_request():
 
     g.json          = json
     g.request       = request
-    g.storage       = Storage()
+    g.storage       = DictStorage()
 
 @app.after_request
 def after_request(response):

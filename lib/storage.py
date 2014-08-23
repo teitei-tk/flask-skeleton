@@ -15,7 +15,7 @@ class BaseStorage(object):
     def remove(self):
         pass
 
-class Storage(BaseStorage):
+class DictStorage(BaseStorage):
     def __init__(self):
         self._storage = dict()
 
