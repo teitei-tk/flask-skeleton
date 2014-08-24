@@ -8,26 +8,32 @@ class BootStrap(object):
     """
     app bootstrap
     """
-    def __init__(self, flask):
+    def __init__(self, flask, config_paths):
+        map(lambda path: flask.config.from_pyfile(path), config_paths)
         self.flask = flask
 
     def run(self, config_paths):
-        for path in config_paths:
-            self.flask.config.from_object(path)
+        self._init_jinja()
+        self._init_storage()
+        self._init_library()
 
+    def _init_jinja(self):
         self.flask.jinja_loader = jinja2.FileSystemLoader('application/views/')
+
+    def _init_storage(self):
+        g.storage       = DictStorage()
+        g.memcache      = MemcacheStorage(app.config['MEMCACHE_SETTING'])
+
+    def _init_library(self):
+        g.json          = json
+        g.request       = request
 
     def before_request(self):
         g.session       = session
         g.charset       = 'utf-8'
         g.content_type  = 'text/html;charset=utf-8'
 
-        g.json          = json
-        g.request       = request
         g.config        = app.config
-
-        g.storage       = DictStorage()
-        g.memcache      = MemcacheStorage(app.config['MEMCACHE_SETTING'])
 
     def after_request(self, response):
         response = make_response(response)
@@ -36,8 +42,8 @@ class BootStrap(object):
         return response
 
 app = Flask(__name__)
-bootstrap = BootStrap(app)
-bootstrap.run(["config.database", "config.memcache"])
+bootstrap = BootStrap(app, ["config.database", "config.memcache"])
+bootstrap.run()
 
 @app.before_request
 def before_request():
