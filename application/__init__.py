@@ -1,6 +1,7 @@
 # coding: utf-8
 import jinja2
 import simplejson as json
+from werkzeug import ( cached_property, )
 from flask import ( Flask, g, session, request, make_response, )
 from lib.storage import ( DictStorage, MemcacheStorage, )
 
@@ -9,13 +10,17 @@ class BootStrap(object):
     app bootstrap
     """
     def __init__(self, flask):
-        self.flask = flask
+        self._flask = flask
 
     def run(self, config_paths):
         for path in config_paths:
-            self.flask.config.from_object(path)
+            self._flask.config.from_object(path)
 
-        self.flask.jinja_loader = jinja2.FileSystemLoader('application/views/')
+        self._flask.jinja_loader = jinja2.FileSystemLoader('application/views/')
+
+    @cached_property
+    def conifg(self):
+        return self._flask.config
 
     def before_request(self):
         g.session       = session
@@ -24,7 +29,7 @@ class BootStrap(object):
 
         g.json          = json
         g.request       = request
-        g.config        = app.config
+        g.config        = self.conifg
 
         g.storage       = DictStorage()
         g.memcache      = MemcacheStorage(app.config['MEMCACHE_SETTING'])
