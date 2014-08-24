@@ -1,3 +1,5 @@
+# coding: utf-8
+
 MEMCACHE_SETTING = dict(
     servers = [
         dict(
