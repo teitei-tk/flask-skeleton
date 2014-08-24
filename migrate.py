@@ -6,5 +6,3 @@ class Migration(object):
     def run(cls):
         from application.models import ( example, )
         bootstrap.db.create_tables([example.Example])
-migration = Migration()
-

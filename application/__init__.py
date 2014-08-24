@@ -30,7 +30,9 @@ class BootStrap(object):
 
     @cached_property
     def db(self):
-        return MySQLDatabase(self.config['DATABASE_SETTING']['db_name'])
+        db_setting = self.config['DATABASE_SETTING']
+        return MySQLDatabase(db_setting['db_name'], host=db_setting['host'], 
+                port=db_setting['port'], user=db_setting['user'], passwd=db_setting['password'])
 
     def before_request(self):
         g.session       = session
@@ -45,8 +47,16 @@ class BootStrap(object):
         g.storage       = DictStorage()
         g.memcache      = MemcacheStorage(self.config['MEMCACHE_SETTING'])
 
+        self.before_action()
+
+    def before_action(self):
+        self.db.connect()
+
     def after_request(self, response):
         response = make_response(response)
+        return self.after_action(response)
+
+    def after_action(self, response):
         if hasattr(g, "content_type"):
             response.headers['Content-Type'] = g.content_type
         return response
