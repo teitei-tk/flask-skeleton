@@ -1,7 +1,7 @@
 # My Flask App Skeleton
 
 ## Overview
-* Python WTF Skeleton at Flask
+* Python WAF Skeleton at Flask
 
 ### usage
 * write mvc logic at applicaiton directory
