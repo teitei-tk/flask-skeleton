@@ -1,6 +1,7 @@
 # coding: utf-8
 import jinja2
 import simplejson as json
+from peewee import ( MySQLDatabase, )
 from werkzeug import ( cached_property, )
 from flask import ( Flask, g, session, request, make_response, )
 from lib.storage import ( DictStorage, MemcacheStorage, )
@@ -13,14 +14,19 @@ class BootStrap(object):
         self._flask = flask
 
     def run(self, config_paths):
-        for path in config_paths:
-            self._flask.config.from_object(path)
-
         self._flask.jinja_loader = jinja2.FileSystemLoader('application/views/')
+        self.load_config(config_paths)
+
+    def load_config(self, paths):
+        return map(lambda x: self._flask.config.from_object(x), paths)
 
     @cached_property
-    def conifg(self):
+    def config(self):
         return self._flask.config
+
+    @cached_property
+    def db(self):
+        return MySQLDatabase(self.config['DATABASE_SETTING']['db_name'])
 
     def before_request(self):
         g.session       = session
@@ -31,8 +37,9 @@ class BootStrap(object):
         g.request       = request
         g.config        = self.conifg
 
+        g.db            = self.db
         g.storage       = DictStorage()
-        g.memcache      = MemcacheStorage(app.config['MEMCACHE_SETTING'])
+        g.memcache      = MemcacheStorage(self._flask.config['MEMCACHE_SETTING'])
 
     def after_request(self, response):
         response = make_response(response)
@@ -51,6 +58,10 @@ def before_request():
 @app.after_request
 def after_request(response):
     return bootstrap.after_request(response)
+
+def generate_database():
+    from application.models.example import Example
+    bootstrap.db.create_tables([Example])
 
 # set routing
 import routes
