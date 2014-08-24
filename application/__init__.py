@@ -14,8 +14,8 @@ class BootStrap(object):
         self._flask = flask
 
     def run(self, config_paths):
-        self._flask.jinja_loader = jinja2.FileSystemLoader('application/views/')
         self.load_config(config_paths)
+        self._flask.jinja_loader = jinja2.FileSystemLoader('application/views/')
 
     def load_config(self, paths):
         if isinstance(paths, str):
@@ -62,10 +62,6 @@ def before_request():
 @app.after_request
 def after_request(response):
     return bootstrap.after_request(response)
-
-def generate_database():
-    from application.models.example import Example
-    bootstrap.db.create_tables([Example])
 
 # set routing
 import routes
