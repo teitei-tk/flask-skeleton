@@ -18,7 +18,11 @@ class BootStrap(object):
         self.load_config(config_paths)
 
     def load_config(self, paths):
-        return map(lambda x: self._flask.config.from_object(x), paths)
+        if isinstance(paths, str):
+            paths = [paths]
+
+        for path in paths:
+            self._flask.config.from_object(path)
 
     @cached_property
     def config(self):
@@ -35,11 +39,11 @@ class BootStrap(object):
 
         g.json          = json
         g.request       = request
-        g.config        = self.conifg
+        g.config        = self.config
 
         g.db            = self.db
         g.storage       = DictStorage()
-        g.memcache      = MemcacheStorage(self._flask.config['MEMCACHE_SETTING'])
+        g.memcache      = MemcacheStorage(self.config['MEMCACHE_SETTING'])
 
     def after_request(self, response):
         response = make_response(response)
