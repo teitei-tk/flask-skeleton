@@ -59,7 +59,12 @@ class BootStrap(object):
     def after_action(self, response):
         if hasattr(g, "content_type"):
             response.headers['Content-Type'] = g.content_type
+        self.db.close()
         return response
+
+    def set_routing(self):
+        from routes import ROUTING_MODULES
+        return [self._flask.register_blueprint(module) for module in ROUTING_MODULES]
 
 app = Flask(__name__)
 bootstrap = BootStrap(app)
@@ -73,5 +78,5 @@ def before_request():
 def after_request(response):
     return bootstrap.after_request(response)
 
-# set routing
-import routes
+# set access routing
+bootstrap.set_routing()
