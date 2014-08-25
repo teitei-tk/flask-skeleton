@@ -10,7 +10,12 @@ class BootStrap(object):
     """
     app bootstrap
     """
+    _db     = None
+    _flask  = None
+
     def __init__(self, flask):
+        if not isinstance(flask, Flask):
+            raise Exception("arg variable object is not Flask instance")
         self._flask = flask
 
     def run(self, config_paths):
@@ -27,12 +32,14 @@ class BootStrap(object):
     @cached_property
     def config(self):
         return self._flask.config
-
+    
     @cached_property
     def db(self):
-        db_setting = self.config['DATABASE_SETTING']
-        return MySQLDatabase(db_setting['db_name'], host=db_setting['host'], 
-                port=db_setting['port'], user=db_setting['user'], passwd=db_setting['password'])
+        if not self._db:
+            db_setting = self.config['DATABASE_SETTING']
+            self._db = MySQLDatabase(db_setting['db_name'], host=db_setting['host'], 
+                    port=db_setting['port'], user=db_setting['user'], passwd=db_setting['password'])
+        return self._db
 
     def before_request(self):
         g.session       = session
