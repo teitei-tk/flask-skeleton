@@ -8,13 +8,26 @@ class BaseModelMixin(object):
         return bootstrap.db
 
     @classmethod
-    def find(cls, key, column=None, offset=1, limit=10):
+    def get_by_column(cls, value, column=None):
+        try:
+            if not column:
+                column = cls.id
+            return cls.get(column == value)
+
+        except cls.DoesNotExist:
+            return None
+
+        except ValueError:
+            return None
+
+    @classmethod
+    def find(cls, value, column=None, offset=1, limit=10):
         try:
             if not column:
                 column = cls.id
 
-            result = [x for x in ( cls.select().where(column == key).
-                        order_by(column == key).paginate(offset, limit).
+            result = [x for x in ( cls.select().where(column == value).
+                        order_by(column == value).paginate(offset, limit).
                         aggregate_rows() ) ]
             next = None
             if result.__len__() == limit:
