@@ -1,1 +1,0 @@
-(function(){console.log("hello world","foo")}).call(this),function(){console.log("concat test")}.call(this),function(){console.log("concat test")}.call(this),function(){console.log("concat test")}.call(this);

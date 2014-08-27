@@ -19,27 +19,29 @@ gulp.task 'compile-coffee', () ->
         .pipe coffee()
         .pipe gulp.dest(paths.jsDest)
 
-gulp.task 'js-precompile', () ->
-    gulp.src paths.jsSrc
-        .pipe clean('application.js')
-        .pipe concat('application.js')
+gulp.task 'js-compile', () ->
+    compileFileName = 'application.js'
+    gulp.src [ paths.jsSrc, '!' + paths.jsDest + '/' + compileFileName ]
+        .pipe concat(compileFileName)
         .pipe uglify()
         .pipe gulp.dest(paths.jsDest)
-
-gulp.task 'css-precompile', () ->
-    gulp.src paths.cssSrc
-        .pipe clean('application.css')
-        .pipe concat('application.css')
-        .pipe minifyCss()
-        .pipe gulp.dest(paths.cssDest)
 
 gulp.task 'compile-sass', () ->
     gulp.src paths.sassSrc
         .pipe sass()
         .pipe gulp.dest(paths.cssDest)
 
-gulp.task 'watch', () ->
-    gulp.watch(paths.coffeeSrc, ['compile-coffee'])
-    gulp.watch(paths.sassSrc, ['compile-sass'])
+gulp.task 'css-compile', () ->
+    compileFileName = 'application.css'
+    gulp.src [ paths.cssSrc, '!' + paths.cssDest + "/" + compileFileName ]
+        .pipe concat(compileFileName)
+        .pipe minifyCss()
+        .pipe gulp.dest(paths.cssDest)
 
-gulp.task 'default', ['compile-coffee', 'compile-sass', 'js-precompile', 'css-precompile']
+gulp.task 'watch', () ->
+    gulp.watch paths.coffeeSrc, ['compile-coffee', 'js-compile']
+    gulp.watch paths.sassSrc, ['compile-sass', 'css-compile']
+
+gulp.task 'assets-compile', ['compile-coffee', 'compile-sass', 'js-compile', 'css-compile']
+
+gulp.task 'default', ['watch']
