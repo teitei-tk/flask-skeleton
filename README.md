@@ -5,13 +5,14 @@
 
 ### usage
 * write mvc logic at applicaiton directory
-    * controller at application.c
-    * model at application.model
-    * html template at application.views
+    * controller at application/c
+    * model at application/model
+    * html template at application/views
+* assets
+    * write your coffeescript and sass code at application/assets/(coffee|sass)/*
+    * asstes compile is use gulp
+        * <code>$ gulp asstes-compile</code>
 
 #### todo
-* static files setting
-    * use gulpjs
-* write database model class
 * running server setting
 * write test code
