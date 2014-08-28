@@ -12,6 +12,7 @@ paths =
     jsDest:    'public/js'
     cssSrc:    'public/css/**/*.css'
     cssDest:   'public/css/'
+    jqueryDest:'bower_components/jquery/dist/jquery.min.js'
 
 gulp.task 'compile-coffee', () ->
     gulp.src paths.coffeeSrc
@@ -20,9 +21,12 @@ gulp.task 'compile-coffee', () ->
 
 gulp.task 'compile-js', () ->
     compileFileName = 'application.js'
-    gulp.src [ paths.jsSrc, '!' + paths.jsDest + '/' + compileFileName ]
+    gulp.src [  paths.jqueryDest,
+                paths.jsSrc,
+                '!' + paths.jsDest + '/' + compileFileName
+             ]
         .pipe concat(compileFileName)
-        .pipe uglify()
+        .pipe uglify(preserveComments:'some')
         .pipe gulp.dest(paths.jsDest)
 
 gulp.task 'compile-sass', () ->
