@@ -1,0 +1,9 @@
+{
+  "name": "flask-skeleton",
+  "version": "0.0.0",
+  "homepage": "https://github.com/teitei-tk/flask-skeleton",
+  "authors": [
+    "teitei-tk <teitei.tk@gmail.com>"
+  ],
+  "license": "MIT"
+}

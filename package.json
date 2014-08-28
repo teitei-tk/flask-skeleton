@@ -1,0 +1,32 @@
+{
+  "name": "flask-skeleton",
+  "version": "0.0.1",
+  "description": "## Overview * Python WAF Skeleton at Flask",
+  "main": "gulpfile.coffee",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/teitei-tk/flask-skeleton.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/teitei-tk/flask-skeleton/issues"
+  },
+  "homepage": "https://github.com/teitei-tk/flask-skeleton",
+  "devDependencies": {
+    "coffee-script": "^1.8.0",
+    "gulp": "^3.8.7",
+    "gulp-coffee": "^2.1.2",
+    "gulp-sass": "^0.7.3",
+    "gulp-concat": "^2.3.4",
+    "gulp-rename": "^1.2.0",
+    "gulp-minify-css": "^0.3.7",
+    "gulp-uglify": "^0.3.2"
+  }
+}

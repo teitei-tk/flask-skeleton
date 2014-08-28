@@ -62,3 +62,6 @@ Icon
 Session.vim
 .netrwhist
 *~
+
+node_modules/
+bower_components/
