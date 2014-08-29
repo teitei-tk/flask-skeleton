@@ -74,6 +74,9 @@ class BootStrap(object):
         return [self._flask.register_blueprint(module) for module in ROUTING_MODULES]
 
 app = Flask(__name__)
+# example
+app.secret_key = '851a9520950a332c1e52c8856722a0cdbd0d2017190b07b3768edf44927de01c'
+
 bootstrap = BootStrap(app)
 bootstrap.run(["config.database", "config.memcache"])
 

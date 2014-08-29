@@ -2,6 +2,8 @@
 import simplejson as json
 from flask import ( g, redirect, render_template, session, request, abort, )
 
+from lib.util import ( CsrfProtection, )
+
 class BaseRender(object):
     pass
 
@@ -20,7 +22,7 @@ class TemplateRender(BaseRender):
     """
     template renderer
     """
-    def render_template(self, template_path, values):
+    def render_template(self, template_path, values={}):
         return render_template(template_path, **values)
 
 class BaseController(TemplateRender, JsonRender):
@@ -54,6 +56,7 @@ class BaseController(TemplateRender, JsonRender):
     @classmethod
     def action(cls):
         instance = cls()
+        instance.csrf.set_csrf_token()
 
         if not instance.authenticate():
             return instance.render_error()
@@ -85,7 +88,7 @@ class BaseController(TemplateRender, JsonRender):
     do render
     """
     def preforward(self):
-        return self.render_json({})
+        return self.render_error()
 
     def render_error(self):
         abort(404)
@@ -107,3 +110,10 @@ class BaseController(TemplateRender, JsonRender):
     @property
     def storage(self):
         return g.storage
+
+    """
+    csrf validation class property
+    """
+    @property
+    def csrf(self):
+        return CsrfProtection
