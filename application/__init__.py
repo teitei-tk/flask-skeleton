@@ -6,6 +6,8 @@ from werkzeug import ( cached_property, )
 from flask import ( Flask, g, session, request, make_response, )
 from lib.storage import ( DictStorage, MemcacheStorage, )
 
+from routes import ROUTING_MODULES
+
 class BootStrap(object):
     """
     app bootstrap
@@ -69,13 +71,18 @@ class BootStrap(object):
         self.db.close()
         return response
 
-    def set_routing(self):
-        from routes import ROUTING_MODULES
-        return [self._flask.register_blueprint(module) for module in ROUTING_MODULES]
+    def set_routing(self, routing_modules):
+        return [self._flask.register_blueprint(module) for module in routing_modules]
 
+"""
+this secret_key is example change required try this command
+
+$ python
+>>> import os
+>>> os.urandom(24)
+"""
 app = Flask(__name__)
-# example
-app.secret_key = '851a9520950a332c1e52c8856722a0cdbd0d2017190b07b3768edf44927de01c'
+app.secret_key = '\x96hy\x96\xd6\x86\xb8#\xf0\x17\x81\n\xd8\x8a\xd3kp\x9c\xfd\xf6\x97\xf0\x89\xc8'
 
 bootstrap = BootStrap(app)
 bootstrap.run(["config.database", "config.memcache"])
@@ -89,4 +96,4 @@ def after_request(response):
     return bootstrap.after_request(response)
 
 # set access routing
-bootstrap.set_routing()
+bootstrap.set_routing(ROUTING_MODULES)
