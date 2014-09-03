@@ -1,6 +1,4 @@
 # coding: utf-8
-import unittest
-from pymysql import ( connect, )
 from peewee import ( CharField, )
 
 from tests import ( TestBase, )
