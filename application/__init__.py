@@ -31,6 +31,10 @@ class BootStrap(object):
         for path in paths:
             self._flask.config.from_object(path)
 
+    @property
+    def flask(self):
+        return self._flask
+
     @cached_property
     def config(self):
         return self._flask.config
