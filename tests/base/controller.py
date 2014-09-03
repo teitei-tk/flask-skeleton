@@ -28,7 +28,7 @@ class TestController(TestBase):
     def initialize(self):
         super(TestController, self).initialize()
         bootstrap.set_routing(controller_module)
-        bootstrap.flask.jinja_loader = jinja2.FileSystemLoader("tests/template/")
+        bootstrap.flask.jinja_loader = jinja2.FileSystemLoader("tests/base/template/")
 
     def get_response(self, app):
         rv = app.preprocess_request()
