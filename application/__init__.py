@@ -76,6 +76,8 @@ class BootStrap(object):
         return response
 
     def set_routing(self, routing_modules):
+        if not isinstance(routing_modules, list):
+            routing_modules = [routing_modules]
         return [self._flask.register_blueprint(module) for module in routing_modules]
 
 """
