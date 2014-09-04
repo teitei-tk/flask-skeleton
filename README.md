@@ -1,5 +1,7 @@
 # My Flask App Skeleton
 
+[![wercker status](https://app.wercker.com/status/ce6767288f0d0b89cbbd9f1af238ae88/m/master "wercker status")](https://app.wercker.com/project/bykey/ce6767288f0d0b89cbbd9f1af238ae88)
+
 ## Overview
 * Python WAF Skeleton at Flask
 
