@@ -21,18 +21,13 @@ class TestBase(unittest.TestCase):
         self.initialize()
 
     def initialize(self):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("DROP DATABASE {0}".format(self.test_db_name))
-        except:
-            pass
-
-        cursor.execute("CREATE DATABASE {0}".format(self.test_db_name))
+        cursor = self.connection.cursor()
+        cursor.execute("CREATE DATABASE IF NOT EXISTS {0}".format(self.test_db_name))
         cursor.close()
 
     def tearDown(self):
         cursor = self.connection.cursor()
-        cursor.execute("DROP DATABASE {0}".format(self.test_db_name))
+        cursor.execute("DROP DATABASE IF EXISTS  {0}".format(self.test_db_name))
         cursor.close()
         self.connection.close()
 
