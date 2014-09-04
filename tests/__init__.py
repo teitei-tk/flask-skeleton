@@ -21,7 +21,12 @@ class TestBase(unittest.TestCase):
         self.initialize()
 
     def initialize(self):
-        cursor = self.connection.cursor()
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DROP DATABASE {0}".format(self.test_db_name))
+        except:
+            pass
+
         cursor.execute("CREATE DATABASE {0}".format(self.test_db_name))
         cursor.close()
 

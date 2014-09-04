@@ -1,7 +1,7 @@
 # coding: utf-8
 import jinja2
 import simplejson as json
-from flask import ( g, Blueprint, make_response, request, )
+from flask import ( Blueprint, request, )
 
 from tests import ( TestBase, TestBaseController, )
 from application import ( app, bootstrap, )
@@ -28,7 +28,7 @@ class TestController(TestBase):
     def initialize(self):
         super(TestController, self).initialize()
         bootstrap.set_routing(controller_module)
-        bootstrap.flask.jinja_loader = jinja2.FileSystemLoader("tests/base/template/")
+        app.jinja_loader = jinja2.FileSystemLoader("tests/base/template/")
 
     def get_response(self, app):
         rv = app.preprocess_request()
@@ -46,7 +46,6 @@ class TestController(TestBase):
 
             self.assertEqual(response.mimetype, "text/json")
             self.assertEqual(response.data.decode('utf-8'), json.dumps({"value" : 1}))
-
 
     def test_template_render(self):
         with app.test_request_context("/test_template_render"):
