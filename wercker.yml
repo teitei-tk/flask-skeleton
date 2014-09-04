@@ -1,0 +1,21 @@
+﻿box: wercker/python
+services:
+    - wercker/mysql
+    - mies/memcached
+packages :
+  - python@3.3.5
+build:
+    steps:
+        - virtualenv:
+            name: set up virtualenv environment
+            python_location: /usr/bin/python3.3
+        - script:
+            name: 'python environment'
+            code: |
+                echo "python version $(python --version) running"
+                echo "pip version $(pip --version) running"
+        - pip-install
+        - script:
+            name: 'run py.test'
+            code: |
+                py.test tests/ -v

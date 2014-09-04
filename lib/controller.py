@@ -56,7 +56,6 @@ class BaseController(TemplateRender, JsonRender):
     @classmethod
     def action(cls):
         instance = cls()
-        instance.csrf.set_csrf_token()
 
         if not instance.authenticate():
             return instance.render_error()
