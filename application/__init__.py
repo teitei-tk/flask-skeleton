@@ -1,11 +1,12 @@
 # coding: utf-8
+import os
 import jinja2
 import simplejson as json
 from peewee import ( MySQLDatabase, )
 from werkzeug import ( cached_property, )
 from flask import ( Flask, g, session, request, make_response, )
-from lib.storage import ( DictStorage, MemcacheStorage, )
 
+from lib.storage import ( DictStorage, MemcacheStorage, )
 from routes import ROUTING_MODULES
 
 class BootStrap(object):
@@ -42,7 +43,11 @@ class BootStrap(object):
     @cached_property
     def db(self):
         if not self._db:
-            db_setting = self.config['DATABASE_SETTING']
+            db_config_key = "DATABASE_SETTING"
+            if os.environ.get("CI", False):
+                db_config_key = "CI_DATABASE_SETTING"
+
+            db_setting = self.config[db_config_key]
             self._db = MySQLDatabase(db_setting['db_name'], host=db_setting['host'], 
                     port=db_setting['port'], user=db_setting['user'], passwd=db_setting['password'])
         return self._db
@@ -91,7 +96,7 @@ app = Flask(__name__)
 app.secret_key = '\x96hy\x96\xd6\x86\xb8#\xf0\x17\x81\n\xd8\x8a\xd3kp\x9c\xfd\xf6\x97\xf0\x89\xc8'
 
 bootstrap = BootStrap(app)
-bootstrap.run(["config.database", "config.memcache"])
+bootstrap.run(["config.database", "config.memcache", "config.ci_database"])
 
 @app.before_request
 def before_request():

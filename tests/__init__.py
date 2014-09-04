@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import os
 import unittest
 from pymysql import ( connect, )
 from flask import ( request, )
@@ -12,13 +13,26 @@ class TestBase(unittest.TestCase):
     test_db_name = "test_db"
 
     def setUp(self):
+        if not os.environ.get('CI', False):
+            self._database_setting()
+        else:
+            self._ci_database_setting()
+
+        self.initialize()
+
+    def _database_setting(self):
         bootstrap.config['DATABASE_SETTING']['db_name'] = self.test_db_name
         db_setting = bootstrap.config['DATABASE_SETTING']
 
         self.connection = connect(host=db_setting['host'], port=db_setting['port'], 
                 user=db_setting['user'], passwd=db_setting['password'])
 
-        self.initialize()
+    def _ci_database_setting(self):
+        bootstrap.config['CI_DATABASE_SETTING']['db_name'] = self.test_db_name
+        db_setting = bootstrap.config['CI_DATABASE_SETTING']
+
+        self.connection = connect(host=db_setting['host'], port=db_setting['port'], 
+                user=db_setting['user'], passwd=db_setting['password'])
 
     def initialize(self):
         cursor = self.connection.cursor()
