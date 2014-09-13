@@ -1,6 +1,23 @@
 # Sample Gunicorn configuration file.
 
 #
+# Process naming
+#
+#   proc_name - A base to use with setproctitle to change the way
+#       that Gunicorn processes are reported in the system process
+#       table. This affects things like 'ps' and 'top'. If you're
+#       going to be running more than one instance of Gunicorn you'll
+#       probably want to set a name to tell them apart. This requires
+#       that you install the setproctitle module.
+#
+#       A string or None to choose a default of something like 'gunicorn'.
+#
+
+proc_name = "flask_example"
+
+
+
+#
 # Server socket
 #
 #   bind - The socket to bind.
@@ -18,7 +35,7 @@
 #       range.
 #
 
-bind = '0.0.0.0:8000'
+bind = 'unix:/tmp/{0}.sock'.format(proc_name)
 backlog = 2048
 
 #
@@ -134,7 +151,7 @@ spew = False
 #
 
 daemon = False
-pidfile = None
+pidfile = "/tmp/gunicorn.pid"
 umask = 0
 user = None
 group = None
@@ -155,21 +172,6 @@ tmp_upload_dir = None
 errorlog = '/var/log/gunicorn/error.log'
 loglevel = 'info'
 accesslog = '/var/log/gunicorn/access.log'
-
-#
-# Process naming
-#
-#   proc_name - A base to use with setproctitle to change the way
-#       that Gunicorn processes are reported in the system process
-#       table. This affects things like 'ps' and 'top'. If you're
-#       going to be running more than one instance of Gunicorn you'll
-#       probably want to set a name to tell them apart. This requires
-#       that you install the setproctitle module.
-#
-#       A string or None to choose a default of something like 'gunicorn'.
-#
-
-proc_name = None
 
 #
 # Server hooks
