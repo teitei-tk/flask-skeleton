@@ -1,0 +1,10 @@
+#!/bin/sh
+
+GUNICORN=$HOME/.anyenv/envs/pyenv/shims/gunicorn
+PROJECT_ROOT=/var/www/flask-skeleton
+PID_FILE=/tmp/gunicorn.pid
+
+APP=application:app
+
+cd $PROJECT_ROOT
+exec $GUNICORN -c $PROJECT_ROOT/gunicorn.conf.py -p=$PID_FILE $APP
