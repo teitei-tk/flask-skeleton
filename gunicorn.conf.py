@@ -150,7 +150,7 @@ spew = False
 #       None to signal that Python should choose one on its own.
 #
 
-daemon = False
+daemon = True
 pidfile = "/tmp/gunicorn.pid"
 umask = 0
 user = None
@@ -170,7 +170,7 @@ tmp_upload_dir = None
 #
 
 errorlog = '/var/log/gunicorn/error.log'
-loglevel = 'info'
+loglevel = 'debug'
 accesslog = '/var/log/gunicorn/access.log'
 
 #
