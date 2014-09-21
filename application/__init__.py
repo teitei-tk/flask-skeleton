@@ -98,7 +98,7 @@ app = Flask(__name__)
 app.secret_key = '\x96hy\x96\xd6\x86\xb8#\xf0\x17\x81\n\xd8\x8a\xd3kp\x9c\xfd\xf6\x97\xf0\x89\xc8'
 
 bootstrap = BootStrap(app)
-bootstrap.run(["config.database", "config.memcache", "config.ci_database"])
+bootstrap.run(["config.database", "config.memcache", "config.ci_database", "config.logging"])
 
 @app.before_request
 def before_request():

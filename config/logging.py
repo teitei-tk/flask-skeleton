@@ -1,10 +1,16 @@
+# coding: utf-8
 import logging
+from application import ( PROJECT_DIR, )
+
+# @see http://docs.python.jp/2.6/library/logging.html#formatter
+LOG_FORMAT = '%(asctime)s - [%(levelname)s] -%(name)s %(module)s, $(filename)s,  %(lineno)s : %(message)s'
+BASE_LEVEL = logging.DEBUG
 
 LOGGING_SETTING = dict(
     file_logger = dict(
-        dump_file = "logs/production.log",
-        logging_level = logging.DEBUG,
-        # @see http://docs.python.jp/2.6/library/logging.html#formatter
-        fomatter = "'%(asctime)s - [%(levelname)s] -%(name)s %(module)s, $(filename)s,  %(lineno)s - %(message)s'",
-        )
+        logging_file    = "{0}/logs/logging.log".format(PROJECT_DIR.__str__()),
+        logging_level   = BASE_LEVEL,
+        mode            = "a",
+        formatter       = LOG_FORMAT,
+        ),
     )

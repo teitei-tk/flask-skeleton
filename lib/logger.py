@@ -2,10 +2,15 @@
 import sys
 import datetime
 import traceback
-from logging import ( getLogger, FileFileHandler, )
+from logging import ( getLogger, Formatter, FileHandler, )
 from flask import ( g, )
 
 from application import ( bootstrap, )
+
+def get_logger(name=None):
+    if not name:
+        name = __name__
+    return getLogger(name)
 
 class Log(object):
     def __init__(self, message, code=1):
@@ -22,8 +27,38 @@ class Log(object):
         return self.to_string()
 
 class LoggerMixin(object):
-    _instance = None
-    log_config_key = None
+    logger          = None
+    _instance       = None
+    log_config_key  = None
+
+    def __init__(self, force_logger=False):
+        logger = None
+        try:
+            if not force_logger and g.logger:
+                self.logger = logger
+            else:
+                self.logger = get_logger()
+        except:
+            self.logger = get_logger()
+
+        logging_level = None
+        config = self.get_config()
+        if not "logging_level" in config:
+            from config.logging import BASE_LEVEL
+            logging_level = BASE_LEVEL
+        else:
+            logging_level = config['logging_level']
+
+        self.logger.setLevel(logging_level)
+        self.logger.addHandler(self.get_handler())
+
+    @classmethod
+    def get_config(cls):
+        return bootstrap.config['LOGGING_SETTING'][cls.key()]
+
+    @classmethod
+    def get_handler(cls):
+        NotImplementedError
 
     @classmethod
     def load(cls):
@@ -54,19 +89,18 @@ class FileLogger(LoggerMixin):
     """
     log_config_key = "file_logger"
 
-    def __init__(self, config):
-        pass
-
     @classmethod
-    def load(cls):
-        app_config = bootstrap.config
-        cls._instance = cls(app_config['LOGGING_SETTING'][cls.key()])
+    def get_handler(cls):
+        config = cls.get_config()
+        handler = FileHandler(filename=config['logging_file'], mode=config['mode'])
+        handler.setFormatter(Formatter(config['formatter']) )
+        return handler
 
     @classmethod
     def get(cls):
         if not cls._instance:
-            cls.load()
-        return cls._instance
+            cls._instance = cls()
+        return cls._instance.logger
 
 class ConsoleLogger(LoggerMixin):
     """
