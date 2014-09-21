@@ -7,7 +7,9 @@ from werkzeug import ( cached_property, )
 from flask import ( Flask, g, session, request, make_response, )
 
 from lib.storage import ( DictStorage, MemcacheStorage, )
-from routes import ROUTING_MODULES
+
+from routes import ( ROUTING_MODULES, )
+from config import ( PROJECT_DIR, )
 
 class BootStrap(object):
     """

@@ -33,6 +33,10 @@ class LoggerMixin(object):
     def get(cls):
         NotImplementedError
 
+    @classmethod
+    def key(cls):
+        return cls.log_config_key
+
     def get_stacktrace(self):
         """
         get error stack_trace
@@ -56,7 +60,7 @@ class FileLogger(LoggerMixin):
     @classmethod
     def load(cls):
         app_config = bootstrap.config
-        cls._instance = cls(app_config['LOGGING_SETTING'][cls.log_config_key])
+        cls._instance = cls(app_config['LOGGING_SETTING'][cls.key()])
 
     @classmethod
     def get(cls):
