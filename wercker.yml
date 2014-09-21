@@ -3,12 +3,12 @@ services:
     - wercker/mysql
     - mies/memcached
 packages :
-  - python@3.3.5
+  - python@3.4.1
 build:
     steps:
         - virtualenv:
             name: set up virtualenv environment
-            python_location: /usr/bin/python3.3
+            python_location: /usr/bin/python3.4
         - script:
             name: 'python environment'
             code: |
