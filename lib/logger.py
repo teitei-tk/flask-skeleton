@@ -7,22 +7,6 @@ from flask import ( g, )
 
 from application import ( bootstrap, )
 
-def get_logger(name=None):
-    if not name:
-        name = __name__
-    return getLogger(name)
-
-def get_stacktrace():
-    """
-    get error stack_trace
-    """
-    stack_trace = []
-    traceback = traceback.format_exception(*sys.exc_info())
-    for trace in traceback:
-        for error in trace.rstrip().split('\n'):
-            stack_trace += [error]
-    return stack_trace
-
 class Log(object):
     def __init__(self, message, code=1):
         self.message = message
@@ -40,18 +24,9 @@ class Log(object):
 class BaseLogger(object):
     logger          = None
     _instance       = None
-    log_config_key  = None
+    __config_key__  = None
 
     def __init__(self, force_logger=False):
-        logger = None
-        try:
-            if not force_logger and g.logger:
-                self.logger = logger
-            else:
-                self.logger = get_logger(__name__)
-        except:
-            self.logger = get_logger(__name__)
-
         logging_level = None
         config = self.get_config()
         if not "logging_level" in config:
@@ -60,6 +35,7 @@ class BaseLogger(object):
         else:
             logging_level = config['logging_level']
 
+        self.logger = getLogger(__name__)
         self.logger.setLevel(logging_level)
         self.logger.addHandler(self.get_handler())
 
@@ -83,13 +59,13 @@ class BaseLogger(object):
 
     @classmethod
     def key(cls):
-        return cls.log_config_key
+        return cls.__config_key__
 
 class FileLogger(BaseLogger):
     """
     file logging
     """
-    log_config_key = "file_logger"
+    __config_key__ = "file_logger"
 
     @classmethod
     def get_handler(cls):
@@ -102,7 +78,7 @@ class ConsoleLogger(BaseLogger):
     """
     console logging
     """
-    log_config_key = "console_logger"
+    __config_key__ = "console_logger"
     
     @classmethod
     def get_handler(cls):
@@ -110,3 +86,12 @@ class ConsoleLogger(BaseLogger):
         handler = StreamHandler()
         handler.setFormatter(Formatter(config['formatter']))
         return handler
+
+
+LOGGER_MAP = {
+    'file'      :   FileLogger,
+    'console'   :   ConsoleLogger,
+    }
+
+def get_logger(key='file'):
+    return LOGGER_MAP[key].get()
