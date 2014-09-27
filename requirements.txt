@@ -1,15 +1,11 @@
-Fabric==1.9.1
 Flask==0.10.1
 Jinja2==2.7.3
 MarkupSafe==0.23
 PyMySQL3==0.5
 Werkzeug==0.9.6
-ecdsa==0.11
 itsdangerous==0.24
-paramiko==1.14.0
 peewee==2.3.1
 py==1.4.23
-pycrypto==2.6.1
 pytest==2.6.1
 python-dateutil==2.2
 python3-memcached==1.51

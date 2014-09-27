@@ -1,13 +1,21 @@
 # coding: utf-8
+from flask import ( g, )
 
 def random_string():
     import string
     import random
     return ''.join([random.choice(string.ascii_letters + string.digits) for i in range(50)])
 
-def secure_string():
-    import hashlib
-    return hashlib.sha256(random_string().encode('utf-8')).hexdigest()
+def get_stacktrace():
+    """
+    get error stack_trace
+    """
+    stack_trace = []
+    traceback = traceback.format_exception(*sys.exc_info())
+    for trace in traceback:
+        for error in trace.rstrip().split('\n'):
+            stack_trace += [error]
+    return stack_trace
 
 class CsrfProtection(object):
     """
@@ -20,8 +28,7 @@ class CsrfProtection(object):
         """
         set csrf_token at session
         """
-        from flask import ( g, )
-        g.session[cls.token_name] = secure_string()
+        g.session[cls.token_name] = random_string()
         return True
 
     @classmethod
@@ -36,7 +43,6 @@ class CsrfProtection(object):
         """
         get session token
         """
-        from flask import ( g, )
         return g.session.get(cls.token_name)
 
     @classmethod
@@ -44,5 +50,4 @@ class CsrfProtection(object):
         """
         get request token
         """
-        from flask import ( g, )
         return g.request.values.get(cls.token_name)

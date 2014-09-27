@@ -7,13 +7,14 @@ from werkzeug import ( cached_property, )
 from flask import ( Flask, g, session, request, make_response, )
 
 from lib.storage import ( DictStorage, MemcacheStorage, )
-from routes import ROUTING_MODULES
+
+from routes import ( ROUTING_MODULES, )
+from config import ( PROJECT_DIR, )
 
 class BootStrap(object):
     """
     app bootstrap
     """
-    _db     = None
     _flask  = None
 
     def __init__(self, flask):
@@ -42,17 +43,41 @@ class BootStrap(object):
     
     @cached_property
     def db(self):
-        if not self._db:
-            db_config_key = "DATABASE_SETTING"
-            if os.environ.get("CI", False):
-                db_config_key = "CI_DATABASE_SETTING"
+        db_config_key = "DATABASE_SETTING"
+        if os.environ.get("CI", False):
+            db_config_key = "CI_DATABASE_SETTING"
 
-            db_setting = self.config[db_config_key]
-            self._db = MySQLDatabase(db_setting['db_name'], host=db_setting['host'], 
-                    port=db_setting['port'], user=db_setting['user'], passwd=db_setting['password'])
-        return self._db
+        db_setting = self.config[db_config_key]
+        return MySQLDatabase(db_setting['db_name'], host=db_setting['host'], 
+                port=db_setting['port'], user=db_setting['user'], passwd=db_setting['password'])
+
+    def get_logger(self, key='console'):
+        from lib.logger import get_logger
+
+        logger = None
+
+        try:
+            logger = get_logger(key)
+        except KeyError:
+            logger = get_logger('file')
+
+        return logger
+
+    @cached_property
+    def logger(self):
+        logger = None
+        try:
+            if g.is_debug:
+                logger = self.get_logger('console')
+            else:
+                logger = self.get_logger()
+        except:
+            logger = self.get_logger()
+
+        return logger
 
     def before_request(self):
+        g.is_debug      = app.debug
         g.session       = session
         g.charset       = 'utf-8'
         g.content_type  = 'text/html;charset=utf-8'
@@ -62,6 +87,7 @@ class BootStrap(object):
         g.config        = self.config
 
         g.db            = self.db
+        g.logger        = self.logger
         g.storage       = DictStorage()
         g.memcache      = MemcacheStorage(self.config['MEMCACHE_SETTING'])
 
@@ -96,7 +122,7 @@ app = Flask(__name__)
 app.secret_key = '\x96hy\x96\xd6\x86\xb8#\xf0\x17\x81\n\xd8\x8a\xd3kp\x9c\xfd\xf6\x97\xf0\x89\xc8'
 
 bootstrap = BootStrap(app)
-bootstrap.run(["config.database", "config.memcache", "config.ci_database"])
+bootstrap.run(["config.database", "config.memcache", "config.ci_database", "config.logging"])
 
 @app.before_request
 def before_request():
