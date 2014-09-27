@@ -2,7 +2,7 @@
 import logging
 from application import ( PROJECT_DIR, )
 
-# @see http://docs.python.jp/2.6/library/logging.html#formatter
+# see http://docs.python.jp/3/library/logging.html
 LOG_FORMAT = '%(asctime)s - [%(levelname)s] -%(name)s %(module)s, $(filename)s,  %(lineno)s : %(message)s'
 BASE_LEVEL = logging.DEBUG
 
@@ -13,4 +13,7 @@ LOGGING_SETTING = dict(
         mode            = "a",
         formatter       = LOG_FORMAT,
         ),
+    console_logger = dict(
+        formatter = LOG_FORMAT,
+        )
     )

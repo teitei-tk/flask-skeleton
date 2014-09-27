@@ -2,7 +2,7 @@
 import sys
 import datetime
 import traceback
-from logging import ( getLogger, Formatter, FileHandler, )
+from logging import ( getLogger, Formatter, StreamHandler, FileHandler, )
 from flask import ( g, )
 
 from application import ( bootstrap, )
@@ -11,6 +11,17 @@ def get_logger(name=None):
     if not name:
         name = __name__
     return getLogger(name)
+
+def get_stacktrace():
+    """
+    get error stack_trace
+    """
+    stack_trace = []
+    traceback = traceback.format_exception(*sys.exc_info())
+    for trace in traceback:
+        for error in trace.rstrip().split('\n'):
+            stack_trace += [error]
+    return stack_trace
 
 class Log(object):
     def __init__(self, message, code=1):
@@ -26,7 +37,7 @@ class Log(object):
     def __str__(self):
         return self.to_string()
 
-class LoggerMixin(object):
+class BaseLogger(object):
     logger          = None
     _instance       = None
     log_config_key  = None
@@ -37,9 +48,9 @@ class LoggerMixin(object):
             if not force_logger and g.logger:
                 self.logger = logger
             else:
-                self.logger = get_logger()
+                self.logger = get_logger(__name__)
         except:
-            self.logger = get_logger()
+            self.logger = get_logger(__name__)
 
         logging_level = None
         config = self.get_config()
@@ -58,32 +69,23 @@ class LoggerMixin(object):
 
     @classmethod
     def get_handler(cls):
-        NotImplementedError
+        raise NotImplementedError()
 
     @classmethod
     def load(cls):
-        NotImplementedError
+        raise NotImplementedError()
 
     @classmethod
-    def get(cls):
-        NotImplementedError
+    def get(cls, force_logger=False):
+        if not cls._instance:
+            cls._instance = cls(force_logger)
+        return cls._instance.logger
 
     @classmethod
     def key(cls):
         return cls.log_config_key
 
-    def get_stacktrace(self):
-        """
-        get error stack_trace
-        """
-        stack_trace = []
-        traceback = traceback.format_exception(*sys.exc_info())
-        for trace in traceback:
-            for error in trace.rstrip().split('\n'):
-                stack_trace += [error]
-        return stack_trace
-
-class FileLogger(LoggerMixin):
+class FileLogger(BaseLogger):
     """
     file logging
     """
@@ -92,18 +94,19 @@ class FileLogger(LoggerMixin):
     @classmethod
     def get_handler(cls):
         config = cls.get_config()
-        handler = FileHandler(filename=config['logging_file'], mode=config['mode'])
+        handler = FileHandler(filename=config['logging_file'], mode=config.get('mode', 'a'))
         handler.setFormatter(Formatter(config['formatter']) )
         return handler
 
-    @classmethod
-    def get(cls):
-        if not cls._instance:
-            cls._instance = cls()
-        return cls._instance.logger
-
-class ConsoleLogger(LoggerMixin):
+class ConsoleLogger(BaseLogger):
     """
     console logging
     """
-    pass
+    log_config_key = "console_logger"
+    
+    @classmethod
+    def get_handler(cls):
+        config = cls.get_config()
+        handler = StreamHandler()
+        handler.setFormatter(Formatter(config['formatter']))
+        return handler
