@@ -1,5 +1,13 @@
 # coding: utf-8
-from application.c.root import index
+from collections import ( namedtuple, )
 
-ROUTING_MODULES = [ index.app ]
+Router = namedtuple('Router', ['url', 'import_path', 'endpoint'])
 
+VIEW_DATAS = [
+    ("/", "application.c.root.index.Index", "index"),
+    ]
+
+
+ROUTING_MODULES = [
+    Router(url=data[0], import_path=data[1], endpoint=data[2]) for data in VIEW_DATAS
+    ]

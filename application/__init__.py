@@ -1,9 +1,10 @@
 # coding: utf-8
 import os
+import collections
 import jinja2
 import simplejson as json
 from peewee import ( MySQLDatabase, )
-from werkzeug import ( cached_property, )
+from werkzeug import ( cached_property, import_string )
 from flask import ( Flask, g, session, request, make_response, )
 
 from lib.storage import ( DictStorage, MemcacheStorage, )
@@ -107,9 +108,15 @@ class BootStrap(object):
         return response
 
     def set_routing(self, routing_modules):
-        if not isinstance(routing_modules, list):
-            routing_modules = [routing_modules]
-        return [self._flask.register_blueprint(module) for module in routing_modules]
+        for module in routing_modules:
+            try:
+                view = import_string(module.import_path)
+                self._flask.add_url_rule(
+                        module.url, module.endpoint, view_func=view.as_view(module.endpoint))
+
+            except ImportError:
+                pass
+
 
 """
 this secret_key is example change required try this command

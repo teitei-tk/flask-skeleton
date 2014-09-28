@@ -1,8 +1,22 @@
 # coding: utf-8
 import simplejson as json
-from flask import ( g, redirect, render_template, session, request, abort, )
 
-from lib.util import ( CsrfProtection, )
+from flask import ( 
+    g, 
+    redirect, 
+    render_template, 
+    session, 
+    request, 
+    abort, 
+    )
+
+from flask.views import ( 
+    View, 
+    )
+
+from lib.util import ( 
+    CsrfProtection, 
+    )
 
 class BaseRender(object):
     pass
@@ -25,45 +39,21 @@ class TemplateRender(BaseRender):
     def render_template(self, template_path, values={}):
         return render_template(template_path, **values)
 
-class BaseController(TemplateRender, JsonRender):
+class BaseHandler(View):
     """
-    usage:
-        app = Blueprint("index", __name__)
-
-        @app.route("/")
-        def index():
-            class Index(BaseController):
-                def prepare(self):
-                    # do validation
-                    return True
-
-                def perform(self):
-                    # do CRUD
-                    self.storage.set("hoge", "fuga")
-                    return True
-
-                def preforward(self):
-                    # do view render
-                    value = self.storage.get("hoge")
-                    return self.render_json({"value" : value})
-
-            return Index.action()
+    ControllerRequest
     """
+    def dispatch_request(self):
+        if not self.authenticate():
+            return self.render_error()
+        if not self.prepare():
+            return self.render_error()
+        if not self.perform():
+            return self.render_error()
+        return self.preforward()
 
-    """
-    do controller action
-    """
-    @classmethod
-    def action(cls):
-        instance = cls()
-
-        if not instance.authenticate():
-            return instance.render_error()
-        if not instance.prepare():
-            return instance.render_error()
-        if not instance.perform():
-            return instance.render_error()
-        return instance.preforward()
+class BaseController(TemplateRender, JsonRender, BaseHandler):
+    """BaseController class"""
 
     """
     using authentication
