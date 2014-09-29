@@ -22,7 +22,7 @@ class TestBase(unittest.TestCase):
             config_key = 'CI_DATABASE_SETTING'
 
         bootstrap.config[config_key]['db_name'] = self.test_db_name
-        db_setting = bootstrap.config['DATABASE_SETTING']
+        db_setting = bootstrap.config[config_key]
 
         self.connection = connect(host=db_setting['host'], port=db_setting['port'], 
                 user=db_setting['user'], passwd=db_setting['password'])
