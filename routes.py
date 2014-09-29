@@ -12,14 +12,16 @@ example:
 
     ("/", "application.c.hoge.Foo", "foo")
 """
+# router class
+Router = namedtuple('Router', ['url', 'import_path', 'endpoint'])
+
+def merge_routing_modules(view_datas):
+    from routes import Router
+    return [Router(url=data[0], import_path=data[1], endpoint=data[2]) for data in view_datas]
+
 VIEW_DATAS = [
     ("/", "application.c.root.index.Index", "index"),
     ]
 
-# router class
-Router = namedtuple('Router', ['url', 'import_path', 'endpoint'])
-
 # managements modules
-ROUTING_MODULES = [
-    Router(url=data[0], import_path=data[1], endpoint=data[2]) for data in VIEW_DATAS
-    ]
+ROUTING_MODULES = merge_routing_modules(VIEW_DATAS)

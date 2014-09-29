@@ -1,12 +1,10 @@
 # coding: utf-8
 import jinja2
 import simplejson as json
-from flask import ( Blueprint, request, )
 
 from tests import ( TestBase, TestBaseController, )
-from application import ( app, bootstrap, )
-
-controller_module = Blueprint("controller", __name__)
+from application import ( bootstrap, )
+from routes import ( merge_routing_modules, )
 
 class TestJsonRender(TestBaseController):
     def preforward(self):
@@ -16,40 +14,27 @@ class TestTemplateRender(TestBaseController):
     def preforward(self):
         return self.render_template("test.html")
 
-@controller_module.route("/test_json_render")
-def json_render():
-    return TestJsonRender.action()
-
-@controller_module.route("/test_template_render")
-def template_render():
-    return TestTemplateRender.action()
+TEST_VIEW_DATA = [
+    ("/test_json_render", "tests.base.test_controller.TestJsonRender", "test_json_render"),
+    ("/test_template_render", "tests.base.test_controller.TestTemplateRender", "test_template_render")
+    ]
+bootstrap.set_routing(merge_routing_modules(TEST_VIEW_DATA))
 
 class TestController(TestBase):
     def initialize(self):
         super(TestController, self).initialize()
-        bootstrap.set_routing(controller_module)
         app.jinja_loader = jinja2.FileSystemLoader("tests/base/template/")
 
-    def get_response(self, app):
-        rv = app.preprocess_request()
-        if rv != None:
-            response = app.make_response(rv)
-        else:
-            rv = app.dispatch_request()
-            response = app.make_response(rv)
-            response = app.process_response(response)
-        return response
-
     def test_json_render(self):
-        with app.test_request_context("/test_json_render"):
-            response = self.get_response(app)
+        with bootstrap.flask.test_request_context("/test_json_render"):
+            response = self.get_response(bootstrap.flask)
 
             self.assertEqual(response.mimetype, "text/json")
             self.assertEqual(response.data.decode('utf-8'), json.dumps({"value" : 1}))
 
     def test_template_render(self):
-        with app.test_request_context("/test_template_render"):
-            response = self.get_response(app)
+        with bootstrap.flask.test_request_context("/test_template_render"):
+            response = self.get_response(bootstrap.flask)
 
             self.assertEqual(response.mimetype, "text/html")
             self.assertEqual(response.data.decode('utf-8'), "")
