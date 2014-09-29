@@ -13,23 +13,16 @@ class TestBase(unittest.TestCase):
     test_db_name = "test_db"
 
     def setUp(self):
-        if not os.environ.get('CI', False):
-            self._database_setting()
-        else:
-            self._ci_database_setting()
-
+        self._database_setting()
         self.initialize()
 
     def _database_setting(self):
-        bootstrap.config['DATABASE_SETTING']['db_name'] = self.test_db_name
-        db_setting = bootstrap.config['DATABASE_SETTING']
+        config_key = 'DATABASE_SETTING'
+        if os.environ.get('CI'):
+            config_key = 'CI_DATABASE_SETTING'
 
-        self.connection = connect(host=db_setting['host'], port=db_setting['port'], 
-                user=db_setting['user'], passwd=db_setting['password'])
-
-    def _ci_database_setting(self):
-        bootstrap.config['CI_DATABASE_SETTING']['db_name'] = self.test_db_name
-        db_setting = bootstrap.config['CI_DATABASE_SETTING']
+        bootstrap.config[config_key]['db_name'] = self.test_db_name
+        db_setting = bootstrap.config[config_key]
 
         self.connection = connect(host=db_setting['host'], port=db_setting['port'], 
                 user=db_setting['user'], passwd=db_setting['password'])
@@ -44,6 +37,16 @@ class TestBase(unittest.TestCase):
         cursor.execute("DROP DATABASE IF EXISTS  {0}".format(self.test_db_name))
         cursor.close()
         self.connection.close()
+
+    def get_response(self, app):
+        rv = app.preprocess_request()
+        if rv != None:
+            response = app.make_response(rv)
+        else:
+            rv = app.dispatch_request()
+            response = app.make_response(rv)
+            response = app.process_response(response)
+        return response
 
 
 class TestBaseController(BaseController):
