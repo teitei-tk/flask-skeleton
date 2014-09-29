@@ -18,7 +18,7 @@ class TestBase(unittest.TestCase):
 
     def _database_setting(self):
         config_key = 'DATABASE_SETTING'
-        if os.environ.get('CI', False):
+        if os.environ.get('CI'):
             config_key = 'CI_DATABASE_SETTING'
 
         bootstrap.config[config_key]['db_name'] = self.test_db_name

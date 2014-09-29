@@ -45,7 +45,7 @@ class BootStrap(object):
     @cached_property
     def db(self):
         config_key = "DATABASE_SETTING"
-        if os.environ.get("CI", False):
+        if os.environ.get("CI"):
             config_key = "CI_DATABASE_SETTING"
 
         db_setting = self.config[config_key]
