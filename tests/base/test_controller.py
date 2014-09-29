@@ -23,7 +23,7 @@ bootstrap.set_routing(merge_routing_modules(TEST_VIEW_DATA))
 class TestController(TestBase):
     def initialize(self):
         super(TestController, self).initialize()
-        app.jinja_loader = jinja2.FileSystemLoader("tests/base/template/")
+        bootstrap.flask.jinja_loader = jinja2.FileSystemLoader("tests/base/template/")
 
     def test_json_render(self):
         with bootstrap.flask.test_request_context("/test_json_render"):
